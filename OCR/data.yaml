@@ -1,0 +1,5 @@
+train: images/train  # Path to training images
+val: images/val    # Path to validation images
+
+nc: 1       # Number of classes (1, since you're only detecting "diagrams")
+names: ['diagram']  # Class names (a list of your class names)
