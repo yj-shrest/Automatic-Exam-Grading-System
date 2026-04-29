@@ -3,3 +3,5 @@ venv39
 .vscode
 **/*.pdf
 **/*.safetensors
+Frontend_git_backup/
+Frontend/.git-backup/
