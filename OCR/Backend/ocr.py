@@ -40,10 +40,10 @@ def ocr_image(image, model, processor, device, torch_dtype):
 
         generated_text = processor.batch_decode(generated_ids, skip_special_tokens=False)[0]
         parsed_answer = processor.post_process_generation(
-            generated_text, task="<OCR>", image_size=(image.shape[1], image.shape[0])  # Use image shape for size
+            generated_text, task="<OCR>", image_size=(image.shape[1], image.shape[0]) 
         )['<OCR>']
 
-    del inputs, generated_ids, generated_text  # Explicit Memory Cleanup
+    del inputs, generated_ids, generated_text 
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
         torch.cuda.ipc_collect()
@@ -52,22 +52,20 @@ def ocr_image(image, model, processor, device, torch_dtype):
     return parsed_answer
 
 
-def ocr_pdf(pdf_file, model, processor, device, torch_dtype):
+def ocr_pdf(pdf_file, model, processor, device, torch_dtype,images=[]):
     """Performs OCR on all pages of a PDF and returns the concatenated text."""
     all_text = ""
-    images = convert_from_path(pdf_file)
-
-    for i, imageOriginal in enumerate(images): #Enumerate over indexes.
-        print(f"Processing page {i+1}/{len(images)}") #Added to see how things progress.
-        image = np.array(imageOriginal)  # Convert PIL image to NumPy array
+    if images == []:
+        images = convert_from_path(pdf_file)
+    for i, imageOriginal in enumerate(images): 
+        print(f"Processing page {i+1}/{len(images)}") 
+        image = np.array(imageOriginal) 
 
         preprocessed_image = preprocess_image(image)
 
         page_text = ocr_image(preprocessed_image, model, processor, device, torch_dtype)
-        all_text += page_text + "\n"  # Concatenate with a newline separator
-
-        del image, preprocessed_image, page_text  #Explicitly deleting data.
-
+        all_text += page_text + "\n"  
+        del image, preprocessed_image, page_text 
     return all_text
 
 

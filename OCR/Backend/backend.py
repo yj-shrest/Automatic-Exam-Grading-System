@@ -5,7 +5,7 @@ from RAGG import encode_and_save, retrieve_pages
 import os
 from PyPDF2 import PdfReader
 from ocr import ocr_pdf
-from LLM import check_answer,gradeDiagram
+from LLM import check_answer,gradeDiagram,check_answer_gemini
 from DiagramDetecter import detectDiagram
 import os
 import torch
@@ -68,23 +68,24 @@ def subjectiveGrade():
 
     os.makedirs('temp/', exist_ok=True)
     answer_file.save('temp/' + filename + '_answer.pdf')
-    diagrams = detectDiagram('temp/' + filename + '_answer.pdf')
-    answer = ocr_pdf('temp/' + filename + '_answer.pdf',model, processor, device, torch_dtype)
+    diagrams,updated_images = detectDiagram('temp/' + filename + '_answer.pdf')
     relevant_pages = retrieve_pages(question, filename,1)
     relevant_text = ' '.join(relevant_pages)
     comment = 'Placeholder Comment'
     if  isinstance(diagrams, list):
+        answer = ocr_pdf('temp/' + filename + '_answer.pdf',model, processor, device, torch_dtype,updated_images)
         print("Diagram Present, Using hybrid Mode for Evaluation")
         diagramScore = gradeDiagram(question,diagrams,float(full_marks)*0.3)
         print(diagramScore)
         textGrade = check_answer(question,relevant_text,ideal_answer,answer,float(full_marks)*0.7)
         # print(diagramScore, "+", textGrade['grade'])
-        grade = diagramScore + textGrade['grade']
+        grade = diagramScore + textGrade['score']
         comment = textGrade['comment']
     else:
+        answer = ocr_pdf('temp/' + filename + '_answer.pdf',model, processor, device, torch_dtype)
         print("No diagram evaluating text only")
         textGrade = check_answer(question,relevant_text,ideal_answer, answer,full_marks)
-        grade = textGrade['grade']
+        grade = textGrade['score']
     return jsonify(grade=grade,comment= comment)
 
 if __name__ == '__main__':

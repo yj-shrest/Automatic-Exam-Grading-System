@@ -47,57 +47,13 @@ def split_data(image_dir, label_dir, train_dir, val_dir, split_ratio=0.8):
     print("Data split complete!")
 
 
-# --------------------------------------------------------------------------
-# Configuration (Set Your Paths)
-# --------------------------------------------------------------------------
-
-# Set Your Directories. Important : Give Absolute Paths
-# image_dir = '/content/images'
-# label_dir = '/content/labels'
-
-# base_dir = '/content'   #Your folder
-
-# --------------------------------------------------------------------------
-# Data Splitting (Uncomment if you need to split the data)
-# --------------------------------------------------------------------------
-# split_data(image_dir, label_dir, base_dir, base_dir, split_ratio=0.8)
-# --------------------------------------------------------------------------
-# Training the Model
-# ------------------------------------------------------
 if __name__ == '__main__':
     from multiprocessing import freeze_support
     freeze_support()  # Only needed if creating a frozen executable (usually not necessary)
 
-    # Data Splitting (Uncomment if you need to split the data)
-    #split_data(image_dir, label_dir, base_dir, base_dir, split_ratio=0.8)
-    # --------------------------------------------------------------------------
-    # Training the Model
-    # --------------------------------------------------------------------------
-
-    # Load a model
     model = YOLO('yolov8n.pt')  # load a pretrained YOLOv8n model
     #model.to(device) #No need to do this. Model will automatically use GPU if available.
 
     # Train the model and get training history
     results = model.train(data='data.yaml', epochs=50,workers=0)  # Train for a smaller number of epochs at start to check the code
-
-    #Access the model's training history
-    #metrics = results.metrics  #This is only for the final result now, not history
-
-    # --------------------------------------------------------------------------
-    # Plotting Training Results
-    # --------------------------------------------------------------------------
-
-    #The way to retrieve the losses is changed. Now the `results` is what is returned.
-    # The loss is stored inside with key 'loss' or 'val_loss'.
-    # For a given results.csv file, you can find a loss column
-
-    #In newer versions the results of the training and validation loss are stored directly in a "results.csv" file, so there's no easy access through history object as before
-
-    #Thus in newer versions, the easiest approach for getting loss for plotting is to use the "results.csv" file after training the model
-    #Another solution is by accessing the engine and its training/validation loaders and iteratiting through them to get the results
-
-    # Plot training and validation loss
-    #In simpler terms, the most direct and reliable way to get the training loss in newer version of YOLOv8 is to load and read the "results.csv" file after training
-
     print("Training and validation are complete. Check the results.csv file in your results folder. Now exiting");
